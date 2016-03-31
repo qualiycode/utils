@@ -14,4 +14,6 @@ This repository contains many useful utilities such as:
 
 * SftpUtils - SFTP utility class that allows SFTP Operations
 
-* EmailClient - Email client (currently support only Gmail) 
+* EmailClient - Email client (currently support only Gmail)
+
+* RestClient - a generic class for working with REST API devices 
