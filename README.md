@@ -1,5 +1,5 @@
-#Uils
+#Utils
 
 This repository contains many useful utilities such as:
 
-* CsvParser - a generic CSV parser
+* CsvParser - A generic CSV parser
