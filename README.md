@@ -19,3 +19,5 @@ This repository contains many useful utilities such as:
 * RestClient - Generic class for working with REST API devices
 
 * IpManager -  IPv4 & IPv6 IP manager that holds the logic of allocating IP's
+
+* DateFormatter - Utility for converting date formats 
