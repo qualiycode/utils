@@ -20,7 +20,8 @@ public class CommandLineExecutorTest {
 		if(SystemUtils.IS_OS_LINUX){
 			command = "ls -l";
 		}else{
-			command = "dir";
+			//we use the "cmd.exe /c <command>" in-case the command is not a real executable file (there is no dir.exe)
+			command = "cmd.exe /c dir";
 		}
 		shell.executeCommand(command);
 		
