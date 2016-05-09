@@ -1,4 +1,4 @@
-#Utils
+#About this Repository
 
 This repository contains many useful utilities such as:
 
@@ -21,3 +21,26 @@ This repository contains many useful utilities such as:
 * IpManager -  IPv4 & IPv6 IP manager that holds the logic of allocating IP's
 
 * DateFormatter - Utility for converting date formats 
+
+<br><br><br><br>
+#How to add it as a Maven dependency
+Since this code is not published to the central Maven repository you should use JitPack repository.
+
+Just Add the following to your pom.xml file:
+
+```
+<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+</repositories>
+
+<dependencies>
+   <dependency>
+	    <groupId>com.qualiycode</groupId>
+	    <artifactId>utils</artifactId>
+	    <version>-SNAPSHOT</version>
+   </dependency>
+</dependencies>
+```
