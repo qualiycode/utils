@@ -40,7 +40,7 @@ Just Add the following to your pom.xml file:
    <dependency>
 	    <groupId>com.qualiycode</groupId>
 	    <artifactId>utils</artifactId>
-	    <version>-SNAPSHOT</version>
+	    <version>v0.0.1</version>
    </dependency>
 </dependencies>
 ```
