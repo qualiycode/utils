@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -14,6 +15,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -25,7 +28,7 @@ import com.qualiycode.utils.strings.StringUtils;
 /**
  * This is a generic class for working with REST API devices
  * 
- * To use this REST client just create an instance and use the handleRestCommand() function
+ * To use this REST client just create an instance and use the handleHttpGetCommand() & handleHttpPostCommand() functions
  * 
  * @author Eli Rozenfeld
  *
@@ -101,6 +104,15 @@ public class RestClient {
 	 */
 	final String COOKIE_REQUEST_HEADER = "Cookie";
 	
+	
+	/**
+	 * This enum contains the supported RestClient HTTP request types
+	 */
+	private enum RestRequestType {
+		POST,
+		GET
+	}
+	
 	/**
 	 * @param host - the REST server IP
 	 * @param port - the REST server PORT
@@ -162,25 +174,25 @@ public class RestClient {
 		EntityUtils.consume(loginResponse.getEntity());
 	}
 	
+
 	/**
-	 * This function sends HTTP Request to the REST server and return the output as String
+	 * This function sends HTTP GET Request to the HTTP server and return the output as String
 	 * 
 	 * Notes:
 	 * 1. The output is the content of the HTTP response
 	 * 2. To get the HTTP response code you should use the getLastStatusCode() function after using this one
 	 * 
 	 * @param uri - the REST URI (for example: /api/metric.csv)
-	 * @param requestType - the HTTP request type (for example: GET / POST)
 	 * @param urlParameters - the list of the request parameters
 	 * @param headers - the list of the request headers
 	 * @return the content of the HTTP response
 	 * @throws Exception
 	 */
-	public String handleRestCommand(String uri, RestRequestType requestType, List<NameValuePair> urlParameters, List<Header> headers) throws Exception{
+	public String handleHttpGetCommand(String uri, List<NameValuePair> urlParameters, List<Header> headers) throws Exception{
 		URI httpFullUri = buildFullHttpUrl(uri, urlParameters);
-		log.info("Invoking HTTP request: " + httpFullUri.toURL());
+		log.info("Invoking HTTP GET request: " + httpFullUri.toURL());
 		
-		HttpRequestBase httpRequest = buildRequest(requestType, httpFullUri, headers);
+		HttpRequestBase httpRequest = buildRequest(RestRequestType.GET, httpFullUri, headers);
 		
 		HttpResponse httpResponse = httpClient.execute(httpRequest);
 		
@@ -191,7 +203,41 @@ public class RestClient {
 
 		return responseContent.toString();
 	}
-	
+
+	/**
+	 * This function sends HTTP POST Request to the HTTP server and return the output as String
+	 * 
+	 * Notes:
+	 * 1. The output is the content of the HTTP response
+	 * 2. To get the HTTP response code you should use the getLastStatusCode() function after using this one
+	 * 
+	 * @param uri - the REST URI (for example: /api/metric.csv)
+	 * @param urlParameters - the list of the request parameters
+	 * @param headers - the list of the request headers
+	 * @param contentType - the POST content type
+	 * @param content - the POST content
+	 * @return the content of the HTTP response
+	 * @throws Exception
+	 */
+	public String handleHttpPostCommand(String uri, List<NameValuePair> urlParameters, List<Header> headers, ContentType contentType, byte[] content) throws Exception{
+		URI httpFullUri = buildFullHttpUrl(uri, urlParameters);
+		log.info("Invoking HTTP POST request: " + httpFullUri.toURL());
+		
+		HttpRequestBase httpRequest = buildRequest(RestRequestType.POST, httpFullUri, headers);
+
+		HttpEntity entity = new ByteArrayEntity(content, contentType);
+		((HttpPost)httpRequest).setEntity(entity);
+		
+		HttpResponse httpResponse = httpClient.execute(httpRequest);
+		
+		lastStatusCode = httpResponse.getStatusLine().getStatusCode();
+		StringBuilder responseContent = getResponseContent(httpResponse);
+
+		EntityUtils.consume(httpResponse.getEntity());
+
+		return responseContent.toString();
+	}
+
 	/**
 	 * This function builds the full HTTP request URL
 	 * @param uri - the REST URI (for example: /api/metric.csv)
@@ -235,7 +281,6 @@ public class RestClient {
 
 		case POST:
 			request = new HttpPost(httpFullUrl);
-			
 			break;
 		default:
 			throw new Exception("Unsupported request type " + requestType.name());
